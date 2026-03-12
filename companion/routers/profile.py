@@ -49,7 +49,7 @@ def save_profile(data: ProfileData):
 
 
 @router.post("/parse_profile")
-def parse_profile():
+async def parse_profile():
     llm = get_provider()
     rag_context = load_resume_rag()
     if not rag_context.strip():
@@ -75,7 +75,7 @@ Context:
 {rag_context}
 """
     try:
-        content = llm.generate(prompt)
+        content = await llm.complete("You are an expert data extractor.", prompt)
         start = content.find('{')
         end = content.rfind('}') + 1
         if start != -1 and end != 0:

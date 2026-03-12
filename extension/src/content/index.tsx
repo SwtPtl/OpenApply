@@ -7,9 +7,16 @@ let sidebarIframe: HTMLIFrameElement | null = null;
 let sidebarVisible = false;
 
 // ─── Message listener ───────────────────────────────────────────────────────
-chrome.runtime.onMessage.addListener((message: MessageType) => {
-  if (message.type === 'TOGGLE_SIDEBAR') toggleSidebar();
-  if (message.type === 'OPEN_SIDEBAR') openSidebar();
+chrome.runtime.onMessage.addListener((message: MessageType, sender, sendResponse) => {
+  if (message.type === 'TOGGLE_SIDEBAR') {
+    toggleSidebar();
+    sendResponse({ ok: true });
+  }
+  if (message.type === 'OPEN_SIDEBAR') {
+    openSidebar();
+    sendResponse({ ok: true });
+  }
+  return true; // Keep message channel open for async response if needed
 });
 
 // ─── Sidebar injection ──────────────────────────────────────────────────────
