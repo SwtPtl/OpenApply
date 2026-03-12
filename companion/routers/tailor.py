@@ -2,6 +2,7 @@ import json
 import re
 import os
 import subprocess
+import traceback
 from datetime import date
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
@@ -35,14 +36,15 @@ class TailorRequest(BaseModel):
 @router.post("/tailor")
 async def tailor(req: TailorRequest):
     """Generate tailored resume, cover letter, and return JSON + LaTeX PDF paths."""
-    api_key = req.profile.get("apiKey")
-    provider_name = req.profile.get("llmProvider")
-    llm = get_provider(api_key=api_key, provider_name=provider_name)
-    rag_scoring = load_scoring_rag()
-    rag_resume = load_resume_rag()
-    rag_cover = load_cover_rag()
+    try:
+        api_key = req.profile.get("apiKey")
+        provider_name = req.profile.get("llmProvider")
+        llm = get_provider(api_key=api_key, provider_name=provider_name)
+        rag_scoring = load_scoring_rag()
+        rag_resume = load_resume_rag()
+        rag_cover = load_cover_rag()
 
-    system = """You are an expert career coach and LaTeX resume writer. Given a candidate's background and a job description, produce:
+        system = """You are an expert career coach and LaTeX resume writer. Given a candidate's background and a job description, produce:
 1. Tailored resume content (focusing on projects and technical skills)
 2. A professional cover letter formatted for LaTeX
 3. Honest fit feedback
@@ -54,6 +56,7 @@ CRITICAL RESUME RULES:
 - Replace the Summary with an Education section.
 - The `latex_resume_experience` and `latex_cover_letter_body` strings MUST explicitly escape all LaTeX special characters (e.g., \\%, \\&, \\$, \\#, \\_) to prevent compilation errors.
 - The `latex_resume_experience` string MUST include explicit `\\n` characters (newlines) for readability (e.g., `\\resumeProjectHeading{...} \\n \\resumeItemListStart \\n`).
+- IMPORTANT: DO NOT include a sign-off or signature (e.g., "Sincerely", "Best regards", or your name) at the end of the cover letter body. The LaTeX template already includes the sign-off block.
 
 Always return ONLY valid JSON (no markdown fences) with exactly this structure:
 {
@@ -64,7 +67,7 @@ Always return ONLY valid JSON (no markdown fences) with exactly this structure:
     "skills": ["skill1", "skill2", ...]
   },
   "latex_resume_experience": "\\\\resumeProjectHeading{\\\\textbf{Project X} $|$ \\\\emph{Tech}}{} \\\\resumeItemListStart \\\\resumeItem{Did Y.} \\\\resumeItemListEnd",
-  "latex_cover_letter_body": "I'm applying to [Role]... \\\\vspace{12pt} My project X... \\\\vspace{12pt} Sincerely,",
+  "latex_cover_letter_body": "I'm applying to [Role]... \\\\vspace{12pt} My project X...",
   "feedback": {
     "strengths": ["strength 1", ...],
     "gaps": ["gap 1", ...],
@@ -79,10 +82,10 @@ Note:
 - escape LaTeX backslashes in JSON (e.g. \\\\textbf instead of \\textbf).
 - fit_score is 0-100."""
 
-    profile = req.profile
-    job = req.job
+        profile = req.profile
+        job = req.job
 
-    user = f"""CANDIDATE PROFILE:
+        user = f"""CANDIDATE PROFILE:
 Name: {profile.get('name', 'N/A')}
 Email: {profile.get('email', 'N/A')}
 Location: {profile.get('location', 'N/A')}
@@ -109,7 +112,6 @@ Requirements: {json.dumps(job.get('requirements', []))}
 
 Generate tailored resume bullets, a cover letter addressed to the hiring team at {job.get('company', 'the company')}, and honest feedback."""
 
-    try:
         raw = await llm.complete(system, user)
         # Robust JSON extraction
         start_idx = raw.find('{')
@@ -201,4 +203,5 @@ Generate tailored resume bullets, a cover letter addressed to the hiring team at
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=500, detail=f"LLM returned invalid JSON: {e}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=repr(e))
