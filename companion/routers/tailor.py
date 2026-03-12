@@ -106,7 +106,12 @@ Generate tailored resume bullets, a cover letter addressed to the hiring team at
 
     try:
         raw = await llm.complete(system, user)
-        raw = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
+        # Robust JSON extraction
+        start_idx = raw.find('{')
+        end_idx = raw.rfind('}')
+        if start_idx != -1 and end_idx != -1:
+            raw = raw[start_idx : end_idx + 1]
+        
         data = json.loads(raw)
         
         # --- PDF Generation ---
