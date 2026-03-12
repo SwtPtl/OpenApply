@@ -2,6 +2,7 @@ import json
 import re
 import os
 import subprocess
+from datetime import date
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -82,13 +83,13 @@ Note:
     job = req.job
 
     user = f"""CANDIDATE PROFILE:
-Name: {profile.name}
-Email: {profile.email}
-Location: {profile.location}
-LinkedIn: {profile.linkedin}
-GitHub: {profile.github}
-Portfolio: {profile.portfolio}
-Work Authorization: {profile.workAuth}
+Name: {profile.get('name', 'N/A')}
+Email: {profile.get('email', 'N/A')}
+Location: {profile.get('location', 'N/A')}
+LinkedIn: {profile.get('linkedin', 'N/A')}
+GitHub: {profile.get('github', 'N/A')}
+Portfolio: {profile.get('portfolio', 'N/A')}
+Work Authorization: {profile.get('workAuth', 'N/A')}
 
 CANDIDATE BACKGROUND FOR SCORING (Use to determine fit_score, strengths, and gaps):
 {rag_scoring if rag_scoring else "No scoring context available."}
@@ -165,6 +166,12 @@ Generate tailored resume bullets, a cover letter addressed to the hiring team at
 
         if cover_tpl.exists() and "latex_cover_letter_body" in data:
             tex = cover_tpl.read_text(encoding="utf-8")
+            
+            # Replace hardcoded header values
+            tex = tex.replace("March 9, 2026", date.today().strftime("%B %d, %Y"))
+            tex = tex.replace("Loblaw Companies Limited", job.get("company", "Company"))
+            tex = tex.replace("Applied Machine Learning Co-op, Supply Chain", job.get("title", "Role"))
+
             # Replace placeholder body text. Loblaw cover letter has "Dear Hiring Team," followed by paragraphs.
             start_idx = tex.find("Dear Hiring Team,")
             end_idx = tex.find("\\vspace{12pt}\nThank you")

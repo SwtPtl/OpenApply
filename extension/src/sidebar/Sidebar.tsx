@@ -41,6 +41,25 @@ export default function Sidebar() {
       if (response?.error) throw new Error(response.error);
       setResult(response);
       setActiveTab('resume');
+      
+      // Track the job
+      chrome.storage.local.get('openapply_applications', (r) => {
+        let apps = r.openapply_applications as any[];
+        if (!Array.isArray(apps)) apps = [];
+        // Prevent duplicate immediate tracking if url already exists
+        if (!apps.some((a) => a.url === job.url)) {
+          const newApp = {
+            id: crypto.randomUUID(),
+            company: job.company || 'Unknown',
+            title: job.title || 'Role',
+            url: job.url,
+            date: new Date().toISOString().split('T')[0],
+            status: 'Applied',
+            fitScore: response.fit_score,
+          };
+          chrome.storage.local.set({ openapply_applications: [newApp, ...apps] });
+        }
+      });
     } catch (e: any) {
       setError(e.message || 'Unknown error');
     } finally {
