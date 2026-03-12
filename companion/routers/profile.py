@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Optional
 from llm.providers import get_provider
-from llm.rag import load_rag_context
+from llm.rag import load_resume_rag
 
 router = APIRouter()
 PROFILE_FILE = Path(__file__).parent.parent / "data" / "profile.json"
@@ -51,7 +51,7 @@ def save_profile(data: ProfileData):
 @router.post("/parse_profile")
 def parse_profile():
     llm = get_provider()
-    rag_context = load_rag_context()
+    rag_context = load_resume_rag()
     if not rag_context.strip():
         return {"error": "No RAG context found. Drop your resume in the companion/rag/ folder."}
 

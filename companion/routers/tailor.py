@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from llm.providers import get_provider
-from llm.rag import load_rag_context
+from llm.rag import load_scoring_rag, load_resume_rag, load_cover_rag
 
 router = APIRouter()
 RAG_DIR = Path(__file__).parent.parent / "rag"
@@ -35,7 +35,9 @@ class TailorRequest(BaseModel):
 async def tailor(req: TailorRequest):
     """Generate tailored resume, cover letter, and return JSON + LaTeX PDF paths."""
     llm = get_provider()
-    rag = load_rag_context()
+    rag_scoring = load_scoring_rag()
+    rag_resume = load_resume_rag()
+    rag_cover = load_cover_rag()
 
     system = """You are an expert career coach and LaTeX resume writer. Given a candidate's background and a job description, produce:
 1. Tailored resume content (focusing on projects and technical skills)
@@ -83,8 +85,14 @@ GitHub: {profile.github}
 Portfolio: {profile.portfolio}
 Work Authorization: {profile.workAuth}
 
-CANDIDATE BACKGROUND (from their own files):
-{rag if rag else "No RAG context available — generate based on profile info only."}
+CANDIDATE BACKGROUND FOR SCORING (Use to determine fit_score, strengths, and gaps):
+{rag_scoring if rag_scoring else "No scoring context available."}
+
+CANDIDATE BACKGROUND FOR RESUME (Use to select projects and skills):
+{rag_resume if rag_resume else "No resume context available."}
+
+CANDIDATE BACKGROUND FOR COVER LETTER (Use for tone, style, and content):
+{rag_cover if rag_cover else "No cover letter context available."}
 
 JOB POSTING:
 Title: {job.get('title', '')}
