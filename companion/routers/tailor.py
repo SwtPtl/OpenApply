@@ -126,20 +126,30 @@ Generate tailored resume bullets, a cover letter addressed to the hiring team at
         if not company_slug:
             company_slug = "Unknown"
             
+        title_slug = "".join(c for c in job.get('title', 'Role') if c.isalnum() or c in (' ', '-', '_')).replace(' ', '_')
+        if not title_slug:
+            title_slug = "Role"
+            
         resume_pdf_url = None
         cover_pdf_url = None
+        
+        def clean_aux_files(base_name):
+            for ext in [".aux", ".log", ".out", ".fls", ".fdb_latexmk"]:
+                f = OUTPUT_DIR / f"{base_name}{ext}"
+                if f.exists():
+                    f.unlink()
         
         if resume_tpl.exists() and "latex_resume_experience" in data:
             tex = resume_tpl.read_text(encoding="utf-8")
             # We assume a marker %-----------PROJECTS----------- or similar. Let's do a simple regex replacement or string replace if we can.
-            # Actually, standard Jake Gutierrez template has \section{Projects}. We can replace everything between \section{Projects} and \section{Technical Skills}
+            # Actually, standard Jake Gutierrez template has \\section{Projects}. We can replace everything between \\section{Projects} and \\section{Technical Skills}
             start_idx = tex.find(r"\section{Projects}")
             end_idx = tex.find(r"\section{Technical Skills}")
             if start_idx != -1 and end_idx != -1:
                 # keep the section header
                 start_idx += len(r"\section{Projects}") + 1
                 new_tex = tex[:start_idx] + "\n\\resumeSubHeadingListStart\n" + data["latex_resume_experience"] + "\n\\resumeSubHeadingListEnd\n\n" + tex[end_idx:]
-                out_name = f"Resume_{company_slug}"
+                out_name = f"Resume_{company_slug}_{title_slug}"
                 with open(OUTPUT_DIR / f"{out_name}.tex", "w", encoding="utf-8") as f:
                     f.write(new_tex)
                 try:
@@ -150,6 +160,8 @@ Generate tailored resume bullets, a cover letter addressed to the hiring team at
                         data["resume_pdf_error"] = res.stdout + "\\n" + res.stderr
                 except Exception as e:
                     data["resume_pdf_error"] = str(e)
+                finally:
+                    clean_aux_files(out_name)
 
         if cover_tpl.exists() and "latex_cover_letter_body" in data:
             tex = cover_tpl.read_text(encoding="utf-8")
@@ -160,7 +172,7 @@ Generate tailored resume bullets, a cover letter addressed to the hiring team at
             if start_idx != -1 and end_idx != -1:
                 start_idx += len("Dear Hiring Team,") + 1
                 new_tex = tex[:start_idx] + "\n\n" + data["latex_cover_letter_body"] + "\n\n" + tex[end_idx:]
-                out_name = f"CoverLetter_{company_slug}"
+                out_name = f"CoverLetter_{company_slug}_{title_slug}"
                 with open(OUTPUT_DIR / f"{out_name}.tex", "w", encoding="utf-8") as f:
                     f.write(new_tex)
                 try:
@@ -171,6 +183,8 @@ Generate tailored resume bullets, a cover letter addressed to the hiring team at
                         data["cover_pdf_error"] = res.stdout + "\\n" + res.stderr
                 except Exception as e:
                     data["cover_pdf_error"] = str(e)
+                finally:
+                    clean_aux_files(out_name)
                     
         data["resume_pdf_url"] = resume_pdf_url
         data["cover_pdf_url"] = cover_pdf_url
