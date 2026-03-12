@@ -45,9 +45,10 @@ async def tailor(req: TailorRequest):
 3. Honest fit feedback
 
 CRITICAL RESUME RULES:
-- Use EXACTLY 3-4 highly relevant projects selected exclusively from the provided `master_projects.md`.
-- Each project MUST have EXACTLY 3-4 bullet points. Do not shorten projects to only 2 bullets.
+- Use EXACTLY 4 highly relevant projects selected exclusively from the provided `master_projects.md` to fill the entire page.
+- Each project MUST have EXACTLY 3-4 detailed bullet points. Do not shorten or skip bullet points from the master file.
 - Replace the Summary with an Education section.
+- The `latex_resume_experience` string MUST include explicit `\\n` characters (newlines) for readability (e.g., `\\resumeProjectHeading{...} \\n \\resumeItemListStart \\n`).
 
 Always return ONLY valid JSON (no markdown fences) with exactly this structure:
 {
