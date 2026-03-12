@@ -10,18 +10,29 @@ export default function HomeTab({ onOpen, companionOnline }: Props) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {!companionOnline && companionOnline !== null && (
         <div style={{
-          display: 'flex', gap: 10, alignItems: 'flex-start',
+          display: 'flex', gap: 10, flexDirection: 'column',
           background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
           borderRadius: 'var(--radius-sm)', padding: '10px 12px',
         }}>
-          <AlertCircle size={15} color="var(--danger)" style={{ flexShrink: 0, marginTop: 1 }} />
-          <div>
-            <p style={{ color: 'var(--danger)', fontSize: 12, fontWeight: 600, marginBottom: 2 }}>Companion offline</p>
-            <p style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
-              Start the companion service to enable AI features.<br />
-              <code style={{ color: 'var(--accent-bright)' }}>cd companion && python main.py</code>
-            </p>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <AlertCircle size={15} color="var(--danger)" style={{ flexShrink: 0, marginTop: 1 }} />
+            <div>
+              <p style={{ color: 'var(--danger)', fontSize: 12, fontWeight: 600, marginBottom: 2 }}>Companion offline</p>
+              <p style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                The local Python service is not running. 
+              </p>
+            </div>
           </div>
+          <button 
+            className="btn btn-primary btn-sm"
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+            onClick={async () => {
+              const res = await chrome.runtime.sendMessage({ type: 'START_COMPANION' });
+              if (res?.error) alert(`Could not start companion. Ensure you ran install_host.bat first.\\n\\nError: ${res.error}`);
+            }}
+          >
+             <Zap size={14} fill="currentColor" /> Start Local Companion
+          </button>
         </div>
       )}
 

@@ -11,6 +11,7 @@ export interface UserProfile {
   requireSponsorship: boolean;
   salaryExpectation?: string;
   llmProvider: 'gemini' | 'deepseek' | 'claude' | 'local';
+  apiKey?: string;
   companionUrl: string;
 }
 
@@ -30,6 +31,8 @@ export interface GenerationResult {
   latex_cover_letter_body?: string;
   resume_pdf_url?: string;
   cover_pdf_url?: string;
+  resume_pdf_error?: string;
+  cover_pdf_error?: string;
   feedback: FeedbackResult;
   keywords_matched: string[];
   keywords_missing: string[];
@@ -66,4 +69,5 @@ export type MessageType =
   | { type: 'GENERATION_COMPLETE'; payload: GenerationResult }
   | { type: 'GENERATION_ERROR'; error: string }
   | { type: 'TOGGLE_SIDEBAR' }
-  | { type: 'OPEN_SIDEBAR' };
+  | { type: 'OPEN_SIDEBAR' }
+  | { type: 'START_COMPANION' };

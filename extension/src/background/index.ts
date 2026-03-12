@@ -24,6 +24,16 @@ chrome.runtime.onMessage.addListener((message: MessageType, _sender, sendRespons
       }
     });
   }
+  if (message.type === 'START_COMPANION') {
+    chrome.runtime.sendNativeMessage('com.openapply.companion', { text: "ping" }, (res) => {
+      if (chrome.runtime.lastError) {
+        sendResponse({ error: chrome.runtime.lastError.message });
+      } else {
+        sendResponse({ ok: true, res });
+      }
+    });
+    return true; // Keep channel open
+  }
   return false;
 });
 
@@ -55,6 +65,8 @@ async function handleGenerate(job: JobContext): Promise<GenerationResult> {
         github: profile.github,
         portfolio: profile.portfolio,
         workAuth: profile.workAuthorization,
+        apiKey: profile.apiKey,
+        llmProvider: profile.llmProvider,
       },
     }),
   });

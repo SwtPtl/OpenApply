@@ -4,6 +4,7 @@ import { getProfile, saveProfile } from '../../store/profile';
 
 export default function SettingsTab() {
   const [provider, setProvider] = useState('gemini');
+  const [apiKey, setApiKey] = useState('');
   const [companionUrl, setCompanionUrl] = useState('http://localhost:7523');
   const [saved, setSaved] = useState(false);
   const [show, setShow] = useState(false);
@@ -11,12 +12,13 @@ export default function SettingsTab() {
   useEffect(() => {
     getProfile().then((p) => {
       setProvider(p.llmProvider);
+      setApiKey(p.apiKey || '');
       setCompanionUrl(p.companionUrl);
     });
   }, []);
 
   async function handleSave() {
-    await saveProfile({ llmProvider: provider as any, companionUrl });
+    await saveProfile({ llmProvider: provider as any, apiKey, companionUrl });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
@@ -58,9 +60,29 @@ export default function SettingsTab() {
             </label>
           ))}
         </div>
-        <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8 }}>
-          API keys are stored in <code style={{ color: 'var(--accent-bright)' }}>companion/.env</code> — never in the browser.
-        </p>
+        <div style={{ marginTop: 12 }}>
+          <label className="label">API Key</label>
+          <div style={{ position: 'relative' }}>
+            <input 
+              className="input" 
+              type={show ? 'text' : 'password'} 
+              value={apiKey} 
+              onChange={e => setApiKey(e.target.value)} 
+              placeholder={provider === 'local' ? "Not required for local models" : "Paste your API key here..."}
+              disabled={provider === 'local'}
+            />
+            <button 
+              onClick={() => setShow(!show)} 
+              style={{ position: 'absolute', right: 10, top: 10, background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+              disabled={provider === 'local'}
+            >
+              {show ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
+          </div>
+          <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
+            Stored securely in your browser's local storage.
+          </p>
+        </div>
       </section>
 
       <div className="divider" />

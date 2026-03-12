@@ -28,13 +28,15 @@ class ProfileContext(BaseModel):
 
 class TailorRequest(BaseModel):
     job: dict
-    profile: ProfileContext
+    profile: dict
 
 
 @router.post("/tailor")
 async def tailor(req: TailorRequest):
     """Generate tailored resume, cover letter, and return JSON + LaTeX PDF paths."""
-    llm = get_provider()
+    api_key = req.profile.get("apiKey")
+    provider_name = req.profile.get("llmProvider")
+    llm = get_provider(api_key=api_key, provider_name=provider_name)
     rag_scoring = load_scoring_rag()
     rag_resume = load_resume_rag()
     rag_cover = load_cover_rag()
@@ -46,8 +48,10 @@ async def tailor(req: TailorRequest):
 
 CRITICAL RESUME RULES:
 - Use EXACTLY 4 highly relevant projects selected exclusively from the provided `master_projects.md` to fill the entire page.
-- Each project MUST have EXACTLY 3-4 detailed bullet points. Do not shorten or skip bullet points from the master file.
+- Each project MUST have EXACTLY 3-4 detailed bullet points. 
+- AGGRESSIVE TAILORING: You are REQUIRED to aggressively hallucinate, rewrite, and make up feasible technologies, metrics, and experiences within these bullet points to perfectly align with the job description and force a 90+ fit score. It must sound highly professional and plausible.
 - Replace the Summary with an Education section.
+- The `latex_resume_experience` and `latex_cover_letter_body` strings MUST explicitly escape all LaTeX special characters (e.g., \\%, \\&, \\$, \\#, \\_) to prevent compilation errors.
 - The `latex_resume_experience` string MUST include explicit `\\n` characters (newlines) for readability (e.g., `\\resumeProjectHeading{...} \\n \\resumeItemListStart \\n`).
 
 Always return ONLY valid JSON (no markdown fences) with exactly this structure:
@@ -138,9 +142,14 @@ Generate tailored resume bullets, a cover letter addressed to the hiring team at
                 out_name = f"Resume_{company_slug}"
                 with open(OUTPUT_DIR / f"{out_name}.tex", "w", encoding="utf-8") as f:
                     f.write(new_tex)
-                subprocess.run(["pdflatex", "-interaction=nonstopmode", f"{out_name}.tex"], cwd=str(OUTPUT_DIR), check=False, stdout=subprocess.DEVNULL)
-                if (OUTPUT_DIR / f"{out_name}.pdf").exists():
-                    resume_pdf_url = f"/output/{out_name}.pdf"
+                try:
+                    res = subprocess.run(["pdflatex", "-interaction=nonstopmode", f"{out_name}.tex"], cwd=str(OUTPUT_DIR), capture_output=True, text=True)
+                    if (OUTPUT_DIR / f"{out_name}.pdf").exists():
+                        resume_pdf_url = f"/output/{out_name}.pdf"
+                    else:
+                        data["resume_pdf_error"] = res.stdout + "\\n" + res.stderr
+                except Exception as e:
+                    data["resume_pdf_error"] = str(e)
 
         if cover_tpl.exists() and "latex_cover_letter_body" in data:
             tex = cover_tpl.read_text(encoding="utf-8")
@@ -154,9 +163,14 @@ Generate tailored resume bullets, a cover letter addressed to the hiring team at
                 out_name = f"CoverLetter_{company_slug}"
                 with open(OUTPUT_DIR / f"{out_name}.tex", "w", encoding="utf-8") as f:
                     f.write(new_tex)
-                subprocess.run(["pdflatex", "-interaction=nonstopmode", f"{out_name}.tex"], cwd=str(OUTPUT_DIR), check=False, stdout=subprocess.DEVNULL)
-                if (OUTPUT_DIR / f"{out_name}.pdf").exists():
-                    cover_pdf_url = f"/output/{out_name}.pdf"
+                try:
+                    res = subprocess.run(["pdflatex", "-interaction=nonstopmode", f"{out_name}.tex"], cwd=str(OUTPUT_DIR), capture_output=True, text=True)
+                    if (OUTPUT_DIR / f"{out_name}.pdf").exists():
+                        cover_pdf_url = f"/output/{out_name}.pdf"
+                    else:
+                        data["cover_pdf_error"] = res.stdout + "\\n" + res.stderr
+                except Exception as e:
+                    data["cover_pdf_error"] = str(e)
                     
         data["resume_pdf_url"] = resume_pdf_url
         data["cover_pdf_url"] = cover_pdf_url

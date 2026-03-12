@@ -1,0 +1,136 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    \textbf{\Huge \scshape Swet Patel} \\ \vspace{1pt}
+    \small 343-540-7923 $|$ \href{mailto:SwetPatel@cmail.carleton.ca}{\underline{SwetPatel@cmail.carleton.ca}} $|$
+    \href{https://linkedin.com/in/swet21}{\underline{linkedin.com/in/swet21}} $|$
+    \href{https://github.com/SwtPtl}{\underline{github.com/SwtPtl}}
+\end{center}
+
+
+%-----------EDUCATION-----------
+\section{Education}
+\resumeSubHeadingListStart
+\resumeSubheading
+{Carleton University}{Ottawa, Ontario}
+{Bachelor of Science in Computer Science (Honours), Minor in Neuroscience}{Aug. 2024 -- Dec. 2027}
+\resumeItemListStart
+\resumeItem{\textbf{Relevant Coursework:} Database Management Systems (SQL, PostgreSQL), Web Development (Node.js, REST APIs), Abstract Data Types \& Algorithms (Java), Object-Oriented Software Engineering (C++/Qt), Systems Programming (C, Linux)}
+\resumeItemListEnd
+\resumeSubHeadingListEnd
+
+
+%-----------PROJECTS-----------
+\section{Projects}
+
+\resumeSubHeadingListStart
+\resumeProjectHeading{\textbf{Health and Fitness Club Management System} $|$ \emph{Python, PostgreSQL, SQLAlchemy, REST APIs}}{} \n \resumeItemListStart \n \resumeItem{Designed normalized PostgreSQL schema with 12 tables and 18 foreign key relationships for member scheduling, billing, and trainer allocation, ensuring data integrity across all operations.} \n \resumeItem{Built modular Python backend exposing 18 RESTful API endpoints with comprehensive test coverage (32 tests, 82% code coverage) validating data integrity and enforcing role-based access control.} \n \resumeItem{Optimized critical member booking queries using database indexing and EXPLAIN ANALYZE, reducing execution time by 75\% and improving system responsiveness for concurrent operations.} \n \resumeItemListEnd \n \n \resumeProjectHeading{\textbf{Job Application AI Agent} $|$ \emph{Python, FastAPI, React, SQLite, LLM APIs, RAG, Docker}}{} \n \resumeItemListStart \n \resumeItem{Engineered microservices architecture with FastAPI backend (12+ REST endpoints) and React dashboard, processing 500+ job listings during stress testing with normalized 8-table SQLite schema managing job state and application workflows.} \n \resumeItem{Integrated RAG pipeline with token caching and circuit breaker pattern, validated by 25+ unit tests with 85\% coverage, reducing average API costs by 22\% while automating data collection and processing.} \n \resumeItem{Reduced application time by 95\% (from 20 minutes to under 1 minute per job) through full-stack automation, successfully processing 500+ job listings during production testing.} \n \resumeItemListEnd \n \n \resumeProjectHeading{\textbf{HinLIBS: Library Management System} $|$ \emph{C++, Qt Framework, SQLite, Unit Testing}}{} \n \resumeItemListStart \n \resumeItem{Architected modular C++ desktop application (2,400+ lines) using Qt framework with 6-table SQLite relational schema and custom Data Access Object (DAO) layer supporting Role-Based Access Control (RBAC) for 3 distinct user types.} \n \resumeItem{Implemented comprehensive unit test suite (25+ tests) validating core business logic including transaction processing for 2,000+ records, fine calculation, and loan validation workflows.} \n \resumeItem{Enforced strict workflow permissions across Admin, Librarian, and Patron roles, ensuring system stability and data consistency across all user interactions.} \n \resumeItemListEnd \n \n \resumeProjectHeading{\textbf{Embedded Logic Simulator} $|$ \emph{C, Linux, Bitwise Operations, GDB, Valgrind}}{} \n \resumeItemListStart \n \resumeItem{Developed C-based simulation engine modeling 8+ core gate types (AND, OR, XOR, MUX) with configurable propagation delays, optimizing core simulation loops using bitwise operations to reduce execution time by 25\%.} \n \resumeItem{Utilized Valgrind and GDB to enforce zero memory leaks and thread safety across 40+ instructor-provided test benches, achieving 100\% pass rate on validation suite.} \n \resumeItem{Effectively simulated complex logic faults and timing analysis for peer verification, demonstrating low-level systems programming expertise essential for embedded systems development.} \n \resumeItemListEnd
+\resumeSubHeadingListEnd
+
+\section{Technical Skills}
+\begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+          \textbf{Languages}{: Python, SQL, Java, JavaScript, C/C++, R} \\
+          \textbf{Data \& Analytics}{: Pandas, NumPy, Power BI, D3.js, Matplotlib, SQL (PostgreSQL, MySQL, SQLite)} \\
+          \textbf{Frameworks \& Tools}{: FastAPI, Node.js, React, Git, Docker, SQLAlchemy ORM, REST APIs} \\
+          \textbf{Concepts}{: Data Pipelines, ETL, Database Design, Data Visualization, Automated Reporting, Unit Testing} \\
+          }}
+\end{itemize}
+
+
+%-------------------------------------------
+\end{document}

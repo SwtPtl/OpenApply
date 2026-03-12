@@ -12,9 +12,11 @@ class LLMProvider(ABC):
 
 
 class GeminiProvider(LLMProvider):
-    def __init__(self):
+    def __init__(self, api_key: str = None):
         from google import genai
-        self.client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+        self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
+        if not self.api_key: raise ValueError("Gemini API Key is missing")
+        self.client = genai.Client(api_key=self.api_key)
         self.model = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
     async def complete(self, system: str, user: str) -> str:
@@ -29,8 +31,9 @@ class GeminiProvider(LLMProvider):
 
 class DeepSeekProvider(LLMProvider):
     """Uses the OpenAI-compatible DeepSeek API."""
-    def __init__(self):
-        self.api_key = os.environ["DEEPSEEK_API_KEY"]
+    def __init__(self, api_key: str = None):
+        self.api_key = api_key or os.environ.get("DEEPSEEK_API_KEY")
+        if not self.api_key: raise ValueError("DeepSeek API Key is missing")
         self.model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
         self.base_url = "https://api.deepseek.com/v1"
 
@@ -53,9 +56,11 @@ class DeepSeekProvider(LLMProvider):
 
 
 class ClaudeProvider(LLMProvider):
-    def __init__(self):
+    def __init__(self, api_key: str = None):
         import anthropic
-        self.client = anthropic.AsyncAnthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+        self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
+        if not self.api_key: raise ValueError("Anthropic API Key is missing")
+        self.client = anthropic.AsyncAnthropic(api_key=self.api_key)
         self.model = os.getenv("CLAUDE_MODEL", "claude-3-5-haiku-latest")
 
     async def complete(self, system: str, user: str) -> str:
@@ -92,14 +97,14 @@ class LocalLLMProvider(LLMProvider):
             return r.json()["message"]["content"]
 
 
-def get_provider() -> LLMProvider:
-    p = os.getenv("LLM_PROVIDER", "gemini").lower()
+def get_provider(api_key: str = None, provider_name: str = None) -> LLMProvider:
+    p = (provider_name or os.getenv("LLM_PROVIDER", "gemini")).lower()
     if p == "gemini":
-        return GeminiProvider()
+        return GeminiProvider(api_key=api_key)
     if p == "deepseek":
-        return DeepSeekProvider()
+        return DeepSeekProvider(api_key=api_key)
     if p == "claude":
-        return ClaudeProvider()
+        return ClaudeProvider(api_key=api_key)
     if p == "local":
         return LocalLLMProvider()
     raise ValueError(f"Unknown LLM_PROVIDER: {p}")

@@ -258,6 +258,10 @@ function ResumeTab({ result, copy, copied }: { result: GenerationResult; copy: (
           <a href={`http://localhost:7523${result.resume_pdf_url}`} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" style={{ border: '1px solid var(--border)', background: 'var(--bg-elevated)', color: 'var(--accent)', fontWeight: 600 }}>
             <FileDown size={12} /> Download PDF
           </a>
+        ) : result.resume_pdf_error ? (
+          <div style={{ fontSize: 11, color: 'var(--danger)', background: 'rgba(239,68,68,0.1)', padding: '4px 8px', borderRadius: 4, display: 'flex', alignItems: 'center', gap: 6 }} title={result.resume_pdf_error}>
+            <AlertTriangle size={12} /> PDF generation failed
+          </div>
         ) : <div />}
         <button className="btn btn-ghost btn-sm" onClick={() => copy(allText, 'resume-all')}>
           {copied === 'resume-all' ? <><Check size={12} /> Copied!</> : <><Copy size={12} /> Copy content</>}
@@ -302,6 +306,10 @@ function CoverTab({ result, copy, copied }: { result: GenerationResult; copy: (t
           <a href={`http://localhost:7523${result.cover_pdf_url}`} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" style={{ border: '1px solid var(--border)', background: 'var(--bg-elevated)', color: 'var(--accent)', fontWeight: 600 }}>
             <FileDown size={12} /> Download PDF
           </a>
+        ) : result.cover_pdf_error ? (
+          <div style={{ fontSize: 11, color: 'var(--danger)', background: 'rgba(239,68,68,0.1)', padding: '4px 8px', borderRadius: 4, display: 'flex', alignItems: 'center', gap: 6 }} title={result.cover_pdf_error}>
+            <AlertTriangle size={12} /> PDF generation failed
+          </div>
         ) : <div />}
         <button className="btn btn-ghost btn-sm" onClick={() => copy(contentToCopy, 'cover')}>
           {copied === 'cover' ? <><Check size={12} /> Copied!</> : <><Copy size={12} /> Copy raw text</>}

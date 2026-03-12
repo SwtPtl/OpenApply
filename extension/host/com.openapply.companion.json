@@ -1,0 +1,9 @@
+{
+  "name": "com.openapply.companion",
+  "description": "Companion service for OpenApply",
+  "path": "openapply-host.bat",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://<EXTENSION_ID_PLACEHOLDER>/"
+  ]
+}
