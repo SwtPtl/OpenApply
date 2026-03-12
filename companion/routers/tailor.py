@@ -42,7 +42,10 @@ async def tailor(req: TailorRequest):
 2. A professional cover letter formatted for LaTeX
 3. Honest fit feedback
 
-For the Resume, replace the Summary with an Education section.
+CRITICAL RESUME RULES:
+- Use EXACTLY 3-4 highly relevant projects selected exclusively from the provided `master_projects.md`.
+- Each project MUST have EXACTLY 3-4 bullet points. Do not shorten projects to only 2 bullets.
+- Replace the Summary with an Education section.
 
 Always return ONLY valid JSON (no markdown fences) with exactly this structure:
 {
