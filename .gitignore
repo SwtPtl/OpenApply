@@ -1,0 +1,29 @@
+# Dependency directories
+node_modules/
+extension/dist/
+extension/.crx/
+
+# Python
+companion/__pycache__/
+companion/venv/
+companion/.venv/
+*.pyc
+*.pyo
+
+# Environment & secrets
+.env
+companion/.env
+*.env
+
+# Data (local user data, don't commit)
+companion/data/
+companion/rag/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp

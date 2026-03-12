@@ -1,0 +1,3 @@
+/* Popup-specific sizing */
+body { width: 380px; min-height: 480px; max-height: 620px; overflow: hidden; }
+#root { height: 100%; display: flex; flex-direction: column; }
